@@ -1,36 +1,18 @@
-import { elementType } from "prop-types";
-import React, { useState, useEffect, useRef } from "react";
-
+import React from "react";
+import useAxios from "./useAxios";
 /**
- * useNotification
- *
+ * useAxios
+ * // npm install axios
  */
-
-const useNotification = (title, options) => {
-  if (!("Notification" in window)) {
-    return;
-  }
-  const fireNotif = () => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(title, options);
-        } else return;
-      });
-    } else {
-      new Notification(title, options);
-    }
-  };
-  return fireNotif;
-};
-
 function App() {
-  const triggerNofitif = useNotification("I want to Sleep", {
-    body: "go to bed",
+  const { loading, data, error, refetch } = useAxios({
+    url: "https://yts.mx/api/v2/list_movies.json",
   });
   return (
     <div>
-      <button onClick={triggerNofitif}>request Noti</button>
+      <h2>{data && data.status}</h2>
+      <h2>{loading && "Loading"}</h2>
+      <button onClick={refetch}>Refectch</button>
     </div>
   );
 }
