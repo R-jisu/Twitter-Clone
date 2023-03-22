@@ -1,33 +1,36 @@
-import React, { useState, useEffect } from "react";
+import { elementType } from "prop-types";
+import React, { useState, useEffect, useRef } from "react";
 
 /**
- * useScroll
+ * useFullScrenn
  *
  */
 
-const useScroll = () => {
-  const [state, setState] = useState({
-    x: 0,
-    y: 0,
-  });
-  const onScroll = () => {
-    setState({ y: window.scrollY, x: window.scrollX });
+const useFullscreen = () => {
+  const element = useRef();
+  const triggerFull = () => {
+    if (element.current) {
+      const { current } = element;
+      current.requestFullscreen();
+    }
   };
-  useEffect(() => {
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return state;
+  const exitFull = () => {
+    document.exitFullscreen();
+  };
+  return { element, triggerFull, exitFull };
 };
 
 function App() {
-  const { y } = useScroll();
+  const { element, triggerFull, exitFull } = useFullscreen();
   return (
-    <div style={{ height: "1000vh" }}>
-      <h2 style={{ position: "fixed", color: y > 1000 ? "red" : "blue" }}>
-        hi
-      </h2>
+    <div>
+      <img
+        ref={element}
+        onClick={exitFull}
+        src="./jip.jpg"
+        alt="집에가고싶다"
+      />
+      <button onClick={triggerFull}>Make fullscreen</button>
     </div>
   );
 }
