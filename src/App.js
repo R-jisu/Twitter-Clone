@@ -1,29 +1,34 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 /**
- * useBeforeLeave
- * 탭을 닫을 때 실행되는 functiion
+ * useNetwork
+ *  naviagtor가 offline이나 online되는것을 막음
  */
-
-const useBeforeLeave = (onBefore) => {
-  const handle = (event) => {
-    const { clientY } = event;
-    if (clientY <= 0) onBefore();
+const useNetwork = (onChange) => {
+  const [status, setStatus] = useState(navigator.onLine);
+  const handleChange = () => {
+    if (typeof onChange === "function") onChange(navigator.onLine);
+    setStatus(navigator.onLine);
   };
   useEffect(() => {
-    document.addEventListener("mouseleave", handle);
+    window.addEventListener("online", handleChange);
+    window.addEventListener("offline", handleChange);
+
     return () => {
-      document.removeEventListener("mouseleave", handle);
+      window.removeEventListener("online", handleChange);
+      window.removeEventListener("offline", handleChange);
     };
   }, []);
+  return status;
 };
 
 function App() {
-  const begForLife = () => console.log("가지마");
-  useBeforeLeave(begForLife);
+  const handleNetworkChange = (online) =>
+    console.log(online ? "you are online" : "you are offline");
+  const onLine = useNetwork(handleNetworkChange);
   return (
     <>
-      <h1>hello</h1>
+      <h2>{onLine ? "Online" : "Offline"}</h2>
     </>
   );
 }
