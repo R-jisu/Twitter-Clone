@@ -2,35 +2,35 @@ import { elementType } from "prop-types";
 import React, { useState, useEffect, useRef } from "react";
 
 /**
- * useFullScrenn
+ * useNotification
  *
  */
 
-const useFullscreen = () => {
-  const element = useRef();
-  const triggerFull = () => {
-    if (element.current) {
-      const { current } = element;
-      current.requestFullscreen();
+const useNotification = (title, options) => {
+  if (!("Notification" in window)) {
+    return;
+  }
+  const fireNotif = () => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification(title, options);
+        } else return;
+      });
+    } else {
+      new Notification(title, options);
     }
   };
-  const exitFull = () => {
-    document.exitFullscreen();
-  };
-  return { element, triggerFull, exitFull };
+  return fireNotif;
 };
 
 function App() {
-  const { element, triggerFull, exitFull } = useFullscreen();
+  const triggerNofitif = useNotification("I want to Sleep", {
+    body: "go to bed",
+  });
   return (
     <div>
-      <img
-        ref={element}
-        onClick={exitFull}
-        src="./jip.jpg"
-        alt="집에가고싶다"
-      />
-      <button onClick={triggerFull}>Make fullscreen</button>
+      <button onClick={triggerNofitif}>request Noti</button>
     </div>
   );
 }
