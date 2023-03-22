@@ -1,35 +1,34 @@
 import React, { useState, useEffect } from "react";
 
 /**
- * useNetwork
- *  naviagtor가 offline이나 online되는것을 막음
+ * useScroll
+ *
  */
-const useNetwork = (onChange) => {
-  const [status, setStatus] = useState(navigator.onLine);
-  const handleChange = () => {
-    if (typeof onChange === "function") onChange(navigator.onLine);
-    setStatus(navigator.onLine);
+
+const useScroll = () => {
+  const [state, setState] = useState({
+    x: 0,
+    y: 0,
+  });
+  const onScroll = () => {
+    setState({ y: window.scrollY, x: window.scrollX });
   };
   useEffect(() => {
-    window.addEventListener("online", handleChange);
-    window.addEventListener("offline", handleChange);
-
-    return () => {
-      window.removeEventListener("online", handleChange);
-      window.removeEventListener("offline", handleChange);
-    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  return status;
+
+  return state;
 };
 
 function App() {
-  const handleNetworkChange = (online) =>
-    console.log(online ? "you are online" : "you are offline");
-  const onLine = useNetwork(handleNetworkChange);
+  const { y } = useScroll();
   return (
-    <>
-      <h2>{onLine ? "Online" : "Offline"}</h2>
-    </>
+    <div style={{ height: "1000vh" }}>
+      <h2 style={{ position: "fixed", color: y > 1000 ? "red" : "blue" }}>
+        hi
+      </h2>
+    </div>
   );
 }
 
